@@ -69,7 +69,7 @@ Create two subfolders in the parent folder. One with `app` name and other with `
                     }
             }
         }
-```
+
 * Change the current working directure to root folder and create `docker-compose.yml` file and put below contents
 
 ```

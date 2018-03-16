@@ -43,7 +43,8 @@ Create two subfolders in the parent folder. One with `app` name and other with `
         COPY nginx.conf /etc/nginx/nginx.conf
     ```
     * Create nginx configuration file with name  `nginx.conf` and paste the below content
-    ```javascript
+
+    ```
     worker_processes 4;
  
     events { worker_connections 1024; }
@@ -59,17 +60,19 @@ Create two subfolders in the parent folder. One with `app` name and other with `
         listen 80;
  
         location / {
-            proxy_pass         http:\/\/app_servers;
+            proxy_pass         http://app_servers;
             proxy_redirect     off;
             proxy_set_header   Host $host;
             proxy_set_header   X-Real-IP $remote_addr;
             proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header   X-Forwarded-Host $server_name;
+                    }
+            }
         }
-    }
-}
+
 ```
 * Change the current working directure to root folder and create `docker-compose.yml` file and put below contents
+
 ```yml
 version: '2.1'
 services:

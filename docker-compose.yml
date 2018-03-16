@@ -1,0 +1,16 @@
+version: '2.1'
+services:
+  dotnetnginx:
+    build: ./app
+    image: app
+    expose:
+      - "5000"
+
+  proxy:
+    build: ./nginx
+    image: nginx
+    ports:
+      - "80:80"
+    links:
+      - dotnetnginx
+    

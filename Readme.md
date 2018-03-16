@@ -33,9 +33,66 @@ Create two subfolders in the parent folder. One with `app` name and other with `
     * Run ``` docker ps ``` to get the container id.
     * Run ``` docker inspect -f "{{ .NetworkSettings.Networks.nat.IPAddress }}" <container id> ``` to get the ip address of the container.
     * Browse to ip to test your application on windows container.
-    * For this demo i am using linux container and Nginx multiarch is not available.
+    * For this demo i am using linux container as Nginx multiarch is not available.
 
-   
+    ### Steps to create NGINX container
+    * Change the current working directory to `nginx` folder by typing `cd nginx` on command terminal.
+    * Create a `Dockerfile` and paste the below content
+    ``` Dockerfile
+        FROM nginx
+        COPY nginx.conf /etc/nginx/nginx.conf
+    ```
+    * Create nginx configuration file with name  `nginx.conf` and paste the below content
+    ```javascript
+    worker_processes 4;
+ 
+    events { worker_connections 1024; }
+ 
+    http {
+        sendfile on;
+ 
+        upstream app_servers {
+        server dotnetnginx;
+    }
+ 
+    server {
+        listen 80;
+ 
+        location / {
+            proxy_pass         http:\/\/app_servers;
+            proxy_redirect     off;
+            proxy_set_header   Host $host;
+            proxy_set_header   X-Real-IP $remote_addr;
+            proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header   X-Forwarded-Host $server_name;
+        }
+    }
+}
+```
+* Change the current working directure to root folder and create `docker-compose.yml` file and put below contents
+```yml
+version: '2.1'
+services:
+  dotnetnginx:
+    build: ./app
+    image: app
+    expose:
+      - "5000"
 
-    Happy Coding !
+  proxy:
+    build: ./nginx
+    image: nginx
+    ports:
+      - "80:80"
+    links:
+      - dotnetnginx
+```
+* Run `docker-compose build` to build the container images and `docker-compose up` to run the containers.
+* As in the current config nginx is listening on port 80 you can browse to http://localhost to see your MVC site up.
+
+Happy Coding !
+
+
+
+
 
